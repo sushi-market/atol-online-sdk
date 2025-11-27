@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace DF\AtolOnline\V5;
 
+use DF\AtolOnline\Enums\HttpAuthType;
 use DF\AtolOnline\Exceptions\AtolOnlineApiV5ErrorException;
+use DF\AtolOnline\Exceptions\MissingTokenException;
 use DF\AtolOnline\Interfaces\ApiRequestInterface;
 use DF\AtolOnline\V5\DTO\GetToken\GetTokenRequestDTO;
 use DF\AtolOnline\V5\DTO\GetToken\GetTokenResponseDTO;
@@ -19,6 +21,7 @@ use Psr\Http\Message\ResponseInterface;
 readonly class AtolOnlineApi
 {
     public function __construct(
+        private string $groupCode,
         private ClientInterface $httpClient,
     ) {}
 
@@ -41,6 +44,16 @@ readonly class AtolOnlineApi
 
         if ($request->getBody() !== null) {
             $options[RequestOptions::JSON] = $request->getBody();
+        }
+
+        if ($request->getAuthType() === HttpAuthType::API_KEY) {
+            if (empty($token)) {
+                throw new MissingTokenException;
+            }
+
+            $options[RequestOptions::HEADERS] = array_merge($options[RequestOptions::HEADERS], [
+                'Token' => $token,
+            ]);
         }
 
         try {
