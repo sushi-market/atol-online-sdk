@@ -45,6 +45,6 @@ abstract class AbstractMapper
             };
         }
 
-        return array_filter($result, fn($value) => $value !== null);
+        return array_filter($result, fn ($value) => $value !== null);
     }
 }
