@@ -6,6 +6,7 @@ namespace DF\AtolOnline\V5\Mappers;
 
 use DF\AtolOnline\Mappers\AbstractMapper;
 use DF\AtolOnline\V5\DTO\DocumentRegistration\DocumentRegistrationResponseDTO;
+use DF\AtolOnline\V5\Enums\DocumentStatus;
 use Psr\Http\Message\ResponseInterface;
 
 final class DocumentRegistrationResponseMapper extends AbstractMapper
@@ -14,9 +15,11 @@ final class DocumentRegistrationResponseMapper extends AbstractMapper
     {
         return new DocumentRegistrationResponseDTO(
             uuid: $data['uuid'],
+            status: DocumentStatus::from($data['status']),
             timestamp: $data['timestamp'],
-            status: $data['status'],
-            error: $data['error'],
+            error: !empty($data['error'])
+                ? ErrorMapper::fromArray($data['error'])
+                : null,
         );
     }
 
