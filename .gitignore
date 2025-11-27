@@ -1,0 +1,8 @@
+# Composer files
+composer.phar
+composer.lock
+vendor/
+
+# IDE and editor files
+.idea/
+.vscode/
