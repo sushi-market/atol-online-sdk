@@ -7,5 +7,5 @@ namespace DF\AtolOnline\Enums;
 enum HttpAuthType
 {
     case NONE;
-    case BEARER;
+    case API_KEY;
 }
