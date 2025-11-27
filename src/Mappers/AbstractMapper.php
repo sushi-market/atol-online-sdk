@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DF\AtolOnline\Mappers;
 
+use BackedEnum;
 use JsonException;
 use Psr\Http\Message\ResponseInterface;
 
@@ -34,6 +35,16 @@ abstract class AbstractMapper
 
     public static function toArray($DTO): array
     {
-        return array_filter((array) $DTO, fn($value) => $value !== null);
+        $result = (array) $DTO;
+
+        foreach ($result as $key => $item) {
+            $result[$key] = match (true) {
+                $item instanceof BackedEnum => $item->value,
+                is_object($item), is_array($item) => self::toArray($item),
+                default => $item,
+            };
+        }
+
+        return array_filter($result, fn($value) => $value !== null);
     }
 }
