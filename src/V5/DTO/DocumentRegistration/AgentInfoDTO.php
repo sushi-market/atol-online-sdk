@@ -11,5 +11,7 @@ final readonly class AgentInfoDTO
     public function __construct(
         public AgentType $type,
         public ?PayingAgentDTO $paying_agent = null,
+        public ?ReceivePaymentsOperatorDTO $receive_payments_operator = null,
+        public ?MoneyTransferOperatorDTO $money_transfer_operator = null,
     ) {}
 }
