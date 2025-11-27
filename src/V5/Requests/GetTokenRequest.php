@@ -7,6 +7,7 @@ namespace DF\AtolOnline\V5\Requests;
 use DF\AtolOnline\Enums\HttpAuthType;
 use DF\AtolOnline\Enums\HttpMethod;
 use DF\AtolOnline\Interfaces\ApiRequestInterface;
+use DF\AtolOnline\Mappers\AbstractMapper;
 use DF\AtolOnline\V5\DTO\GetToken\GetTokenRequestDTO;
 
 final readonly class GetTokenRequest implements ApiRequestInterface
@@ -37,7 +38,7 @@ final readonly class GetTokenRequest implements ApiRequestInterface
 
     public function getBody(): ?array
     {
-        return (array) $this->requestDTO;
+        return AbstractMapper::toArray($this->requestDTO);
     }
 
     public function getHeaders(): array

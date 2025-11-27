@@ -31,4 +31,9 @@ abstract class AbstractMapper
             ),
         );
     }
+
+    public static function toArray($DTO): array
+    {
+        return array_filter((array) $DTO, fn($value) => $value !== null);
+    }
 }
