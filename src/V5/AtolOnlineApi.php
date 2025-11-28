@@ -8,10 +8,15 @@ use DF\AtolOnline\Enums\HttpAuthType;
 use DF\AtolOnline\Exceptions\AtolOnlineApiV5ErrorException;
 use DF\AtolOnline\Exceptions\MissingTokenException;
 use DF\AtolOnline\Interfaces\ApiRequestInterface;
+use DF\AtolOnline\V5\DTO\DocumentRegistration\DocumentRegistrationRequestDTO;
+use DF\AtolOnline\V5\DTO\DocumentRegistration\DocumentRegistrationResponseDTO;
 use DF\AtolOnline\V5\DTO\GetToken\GetTokenRequestDTO;
 use DF\AtolOnline\V5\DTO\GetToken\GetTokenResponseDTO;
+use DF\AtolOnline\V5\Enums\Operation;
+use DF\AtolOnline\V5\Mappers\DocumentRegistrationResponseMapper;
 use DF\AtolOnline\V5\Mappers\ErrorResponseMapper;
 use DF\AtolOnline\V5\Mappers\GetTokenResponseMapper;
+use DF\AtolOnline\V5\Requests\DocumentRegistrationRequest;
 use DF\AtolOnline\V5\Requests\GetTokenRequest;
 use DF\AtolOnline\V5\Storage\TokenStorage;
 use DF\AtolOnline\V5\ValueObjects\AccessToken;
@@ -53,6 +58,19 @@ readonly class AtolOnlineApi
         return GetTokenResponseMapper::fromJsonResponse(
             response: $this->send(
                 request: new GetTokenRequest($requestDTO),
+            ),
+        );
+    }
+
+    public function sell(DocumentRegistrationRequestDTO $requestDTO): DocumentRegistrationResponseDTO
+    {
+        return DocumentRegistrationResponseMapper::fromJsonResponse(
+            response: $this->send(
+                request: new DocumentRegistrationRequest(
+                    groupCode: $this->groupCode,
+                    operation: Operation::SELL,
+                    requestDTO: $requestDTO,
+                ),
             ),
         );
     }
