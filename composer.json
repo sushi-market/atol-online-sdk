@@ -12,7 +12,8 @@
     ],
     "require": {
         "php": "^8.4",
-        "guzzlehttp/guzzle": "^7.10"
+        "guzzlehttp/guzzle": "^7.10",
+        "symfony/object-mapper": "^8.0"
     },
     "require-dev": {
         "laravel/pint": "^1.25.0",
