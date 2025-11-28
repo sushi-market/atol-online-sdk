@@ -88,7 +88,7 @@ readonly class AtolOnlineApi
             response: $this->send(
                 request: new DocumentRegistrationRequest(
                     groupCode: $this->groupCode,
-                    operation: Operation::SELL,
+                    operation: $operation,
                     requestDTO: $requestDTO,
                 ),
             ),
