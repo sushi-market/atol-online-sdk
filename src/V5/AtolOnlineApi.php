@@ -13,6 +13,8 @@ use DF\AtolOnline\V5\DTO\GetToken\GetTokenResponseDTO;
 use DF\AtolOnline\V5\Mappers\ErrorResponseMapper;
 use DF\AtolOnline\V5\Mappers\GetTokenResponseMapper;
 use DF\AtolOnline\V5\Requests\GetTokenRequest;
+use DF\AtolOnline\V5\Storage\TokenStorage;
+use DF\AtolOnline\V5\ValueObjects\AccessToken;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\RequestOptions;
@@ -21,9 +23,30 @@ use Psr\Http\Message\ResponseInterface;
 readonly class AtolOnlineApi
 {
     public function __construct(
+        private string $login,
+        private string $password,
         private string $groupCode,
         private ClientInterface $httpClient,
+        public TokenStorage $tokenStorage = new TokenStorage,
+        private ?string $source = null,
     ) {}
+
+    public function auth(?string $login = null, ?string $password = null, ?string $source = null): static
+    {
+        $accessToken = new AccessToken(
+            value: static::getToken(
+                requestDTO: new GetTokenRequestDTO(
+                    login: $login ?? $this->login,
+                    pass: $password ?? $this->password,
+                    source: $source ?? $this->source,
+                ),
+            )->token
+        );
+
+        $this->tokenStorage->token = $accessToken;
+
+        return $this;
+    }
 
     public function getToken(GetTokenRequestDTO $requestDTO): GetTokenResponseDTO
     {
@@ -47,12 +70,12 @@ readonly class AtolOnlineApi
         }
 
         if ($request->getAuthType() === HttpAuthType::API_KEY) {
-            if (empty($token)) {
+            if (empty($this->tokenStorage->token)) {
                 throw new MissingTokenException;
             }
 
             $options[RequestOptions::HEADERS] = array_merge($options[RequestOptions::HEADERS], [
-                'Token' => $token,
+                'Token' => $this->tokenStorage->token->value,
             ]);
         }
 
