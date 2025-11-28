@@ -64,6 +64,26 @@ readonly class AtolOnlineApi
 
     public function sell(DocumentRegistrationRequestDTO $requestDTO): DocumentRegistrationResponseDTO
     {
+        return $this->documentRegistration(Operation::SELL, $requestDTO);
+    }
+
+    public function sellRefund(DocumentRegistrationRequestDTO $requestDTO): DocumentRegistrationResponseDTO
+    {
+        return $this->documentRegistration(Operation::SELL_REFUND, $requestDTO);
+    }
+
+    public function buy(DocumentRegistrationRequestDTO $requestDTO): DocumentRegistrationResponseDTO
+    {
+        return $this->documentRegistration(Operation::BUY, $requestDTO);
+    }
+
+    public function buyRefund(DocumentRegistrationRequestDTO $requestDTO): DocumentRegistrationResponseDTO
+    {
+        return $this->documentRegistration(Operation::BUY_REFUND, $requestDTO);
+    }
+
+    private function documentRegistration(Operation $operation, DocumentRegistrationRequestDTO $requestDTO): DocumentRegistrationResponseDTO
+    {
         return DocumentRegistrationResponseMapper::fromJsonResponse(
             response: $this->send(
                 request: new DocumentRegistrationRequest(
