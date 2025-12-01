@@ -11,12 +11,15 @@ use DF\AtolOnline\Enums\HttpAuthType;
 use DF\AtolOnline\Exceptions\AtolOnlineApiV5ErrorException;
 use DF\AtolOnline\Exceptions\MissingTokenException;
 use DF\AtolOnline\Interfaces\ApiRequestInterface;
+use DF\AtolOnline\V5\DTO\DocumentInfo\DocumentInfoRequestDTO;
+use DF\AtolOnline\V5\DTO\DocumentInfo\DocumentInfoResponseDTO;
 use DF\AtolOnline\V5\DTO\DocumentRegistration\DocumentRegistrationRequestDTO;
 use DF\AtolOnline\V5\DTO\DocumentRegistration\DocumentRegistrationResponseDTO;
 use DF\AtolOnline\V5\DTO\GetToken\GetTokenRequestDTO;
 use DF\AtolOnline\V5\DTO\GetToken\GetTokenResponseDTO;
 use DF\AtolOnline\V5\DTO\Shared\ErrorResponseDTO;
 use DF\AtolOnline\V5\Enums\Operation;
+use DF\AtolOnline\V5\Requests\DocumentInfoRequest;
 use DF\AtolOnline\V5\Requests\DocumentRegistrationRequest;
 use DF\AtolOnline\V5\Requests\GetTokenRequest;
 use DF\AtolOnline\V5\Storage\TokenStorage;
@@ -98,6 +101,16 @@ readonly class AtolOnlineApi
         ))->getBody()->getContents();
 
         return $this->mapper->map($json, DocumentRegistrationResponseDTO::class);
+    }
+
+    public function documentInfo(DocumentInfoRequestDTO $requestDTO): DocumentInfoResponseDTO
+    {
+        $json = $this->send(new DocumentInfoRequest(
+            groupCode: $this->groupCode,
+            uuid: $requestDTO->uuid,
+        ))->getBody()->getContents();
+
+        return $this->mapper->map($json, DocumentInfoResponseDTO::class);
     }
 
     private function send(ApiRequestInterface $request): ResponseInterface
