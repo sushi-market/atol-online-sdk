@@ -12,6 +12,8 @@ use DF\AtolOnline\Enums\HttpAuthType;
 use DF\AtolOnline\Exceptions\AtolOnlineApiV5ErrorException;
 use DF\AtolOnline\Exceptions\MissingTokenException;
 use DF\AtolOnline\Interfaces\ApiRequestInterface;
+use DF\AtolOnline\V5\DTO\DocumentCorrection\DocumentCorrectionRequestDTO;
+use DF\AtolOnline\V5\DTO\DocumentCorrection\DocumentCorrectionResponseDTO;
 use DF\AtolOnline\V5\DTO\DocumentInfo\DocumentInfoRequestDTO;
 use DF\AtolOnline\V5\DTO\DocumentInfo\DocumentInfoResponseDTO;
 use DF\AtolOnline\V5\DTO\DocumentRegistration\DocumentRegistrationRequestDTO;
@@ -20,6 +22,7 @@ use DF\AtolOnline\V5\DTO\GetToken\GetTokenRequestDTO;
 use DF\AtolOnline\V5\DTO\GetToken\GetTokenResponseDTO;
 use DF\AtolOnline\V5\DTO\Shared\ErrorResponseDTO;
 use DF\AtolOnline\V5\Enums\Operation;
+use DF\AtolOnline\V5\Requests\DocumentCorrectionRequest;
 use DF\AtolOnline\V5\Requests\DocumentInfoRequest;
 use DF\AtolOnline\V5\Requests\DocumentRegistrationRequest;
 use DF\AtolOnline\V5\Requests\GetTokenRequest;
@@ -94,6 +97,26 @@ readonly final class AtolOnlineApi
         return $this->documentRegistration(Operation::BUY_REFUND, $requestDTO);
     }
 
+    public function sellCorrection(DocumentCorrectionRequestDTO $requestDTO): DocumentCorrectionResponseDTO
+    {
+        return $this->documentCorrection(Operation::SELL_CORRECTION, $requestDTO);
+    }
+
+    public function sellRefundCorrection(DocumentCorrectionRequestDTO $requestDTO): DocumentCorrectionResponseDTO
+    {
+        return $this->documentCorrection(Operation::SELL_REFUND_CORRECTION, $requestDTO);
+    }
+
+    public function buyCorrection(DocumentCorrectionRequestDTO $requestDTO): DocumentCorrectionResponseDTO
+    {
+        return $this->documentCorrection(Operation::BUY_CORRECTION, $requestDTO);
+    }
+
+    public function buyRefundCorrection(DocumentCorrectionRequestDTO $requestDTO): DocumentCorrectionResponseDTO
+    {
+        return $this->documentCorrection(Operation::BUY_REFUND_CORRECTION, $requestDTO);
+    }
+
     private function documentRegistration(Operation $operation, DocumentRegistrationRequestDTO $requestDTO): DocumentRegistrationResponseDTO
     {
         $json = $this->send(new DocumentRegistrationRequest(
@@ -103,6 +126,17 @@ readonly final class AtolOnlineApi
         ))->getBody()->getContents();
 
         return $this->mapper->map($json, DocumentRegistrationResponseDTO::class);
+    }
+
+    private function documentCorrection(Operation $operation, DocumentCorrectionRequestDTO $requestDTO): DocumentCorrectionResponseDTO
+    {
+        $json = $this->send(new DocumentCorrectionRequest(
+            groupCode: $this->groupCode,
+            operation: $operation,
+            requestDTO: $requestDTO,
+        ))->getBody()->getContents();
+
+        return $this->mapper->map($json, DocumentCorrectionResponseDTO::class);
     }
 
     public function documentInfo(DocumentInfoRequestDTO $requestDTO): DocumentInfoResponseDTO
