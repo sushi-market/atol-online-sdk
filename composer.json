@@ -13,7 +13,7 @@
     "require": {
         "php": "^8.4",
         "guzzlehttp/guzzle": "^7.10",
-        "rekalogika/mapper": "^2.0"
+        "brick/json-mapper": "^0.1.1"
     },
     "require-dev": {
         "laravel/pint": "^1.25.0",
