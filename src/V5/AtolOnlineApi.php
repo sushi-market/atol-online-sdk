@@ -6,6 +6,7 @@ namespace DF\AtolOnline\V5;
 
 use BackedEnum;
 use Brick\JsonMapper\JsonMapper;
+use Brick\JsonMapper\OnMissingProperties;
 use DF\AtolOnline\Enums\HttpAuthType;
 use DF\AtolOnline\Exceptions\AtolOnlineApiV5ErrorException;
 use DF\AtolOnline\Exceptions\MissingTokenException;
@@ -37,7 +38,9 @@ readonly class AtolOnlineApi
         public TokenStorage $tokenStorage = new TokenStorage,
         private ?string $source = null,
     ) {
-        $this->mapper = new JsonMapper();
+        $this->mapper = new JsonMapper(
+            onMissingProperties: OnMissingProperties::SET_DEFAULT,
+        );
     }
 
     public function auth(): static
