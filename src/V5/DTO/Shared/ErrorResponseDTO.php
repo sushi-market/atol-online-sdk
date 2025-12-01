@@ -12,5 +12,6 @@ readonly class ErrorResponseDTO
         public ErrorDTO $error,
         public string $timestamp,
         public ?DocumentStatus $status = null,
+        public ?string $uuid = null,
     ) {}
 }
