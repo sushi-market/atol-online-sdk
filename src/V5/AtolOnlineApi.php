@@ -14,7 +14,6 @@ use DF\AtolOnline\V5\DTO\DocumentRegistration\DocumentRegistrationResponseDTO;
 use DF\AtolOnline\V5\DTO\GetToken\GetTokenRequestDTO;
 use DF\AtolOnline\V5\DTO\GetToken\GetTokenResponseDTO;
 use DF\AtolOnline\V5\Enums\Operation;
-use DF\AtolOnline\V5\Mappers\DocumentRegistrationResponseMapper;
 use DF\AtolOnline\V5\Mappers\ErrorResponseMapper;
 use DF\AtolOnline\V5\Requests\DocumentRegistrationRequest;
 use DF\AtolOnline\V5\Requests\GetTokenRequest;
@@ -88,15 +87,13 @@ readonly class AtolOnlineApi
 
     private function documentRegistration(Operation $operation, DocumentRegistrationRequestDTO $requestDTO): DocumentRegistrationResponseDTO
     {
-        return DocumentRegistrationResponseMapper::fromJsonResponse(
-            response: $this->send(
-                request: new DocumentRegistrationRequest(
-                    groupCode: $this->groupCode,
-                    operation: $operation,
-                    requestDTO: $requestDTO,
-                ),
-            ),
-        );
+        $json = $this->send(new DocumentRegistrationRequest(
+            groupCode: $this->groupCode,
+            operation: $operation,
+            requestDTO: $requestDTO,
+        ))->getBody()->getContents();
+
+        return $this->mapper->map($json, DocumentRegistrationResponseDTO::class);
     }
 
     private function send(ApiRequestInterface $request): ResponseInterface
