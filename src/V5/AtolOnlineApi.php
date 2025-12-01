@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DF\AtolOnline\V5;
 
+use BackedEnum;
 use Brick\JsonMapper\JsonMapper;
 use DF\AtolOnline\Enums\HttpAuthType;
 use DF\AtolOnline\Exceptions\AtolOnlineApiV5ErrorException;
@@ -105,7 +106,7 @@ readonly class AtolOnlineApi
         ];
 
         if ($request->getBody() !== null) {
-            $options[RequestOptions::JSON] = $request->getBody();
+            $options[RequestOptions::JSON] = $this->serializeJsonToArray($request->getBody());
         }
 
         if ($request->getAuthType() === HttpAuthType::API_KEY) {
@@ -129,5 +130,20 @@ readonly class AtolOnlineApi
         }
 
         return $response;
+    }
+
+    private function serializeJsonToArray(object|array $json): array
+    {
+        $result = (array) $json;
+
+        foreach ($result as $key => $item) {
+            $result[$key] = match (true) {
+                $item instanceof BackedEnum => $item->value,
+                is_object($item), is_array($item) => $this->serializeJsonToArray($item),
+                default => $item,
+            };
+        }
+
+        return array_filter($result, fn ($value) => $value !== null);
     }
 }

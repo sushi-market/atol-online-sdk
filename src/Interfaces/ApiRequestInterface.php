@@ -17,7 +17,7 @@ interface ApiRequestInterface
 
     public function getQuery(): ?string;
 
-    public function getBody(): ?array;
+    public function getBody(): ?object;
 
     public function getHeaders(): array;
 }

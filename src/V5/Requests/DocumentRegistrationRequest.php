@@ -7,7 +7,6 @@ namespace DF\AtolOnline\V5\Requests;
 use DF\AtolOnline\Enums\HttpAuthType;
 use DF\AtolOnline\Enums\HttpMethod;
 use DF\AtolOnline\Interfaces\ApiRequestInterface;
-use DF\AtolOnline\Mappers\AbstractMapper;
 use DF\AtolOnline\V5\DTO\DocumentRegistration\DocumentRegistrationRequestDTO;
 use DF\AtolOnline\V5\Enums\Operation;
 
@@ -39,9 +38,9 @@ final readonly class DocumentRegistrationRequest implements ApiRequestInterface
         return null;
     }
 
-    public function getBody(): ?array
+    public function getBody(): DocumentRegistrationRequestDTO
     {
-        return AbstractMapper::toArray($this->requestDTO);
+        return $this->requestDTO;
     }
 
     public function getHeaders(): array
