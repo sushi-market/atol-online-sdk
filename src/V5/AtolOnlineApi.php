@@ -29,7 +29,7 @@ use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\RequestOptions;
 use Psr\Http\Message\ResponseInterface;
 
-readonly class AtolOnlineApi
+readonly final class AtolOnlineApi
 {
     private JsonMapper $mapper;
 
@@ -46,7 +46,7 @@ readonly class AtolOnlineApi
         );
     }
 
-    public function auth(): static
+    public function auth(): self
     {
         $responseDTO = $this->getToken(
             requestDTO: new GetTokenRequestDTO(
