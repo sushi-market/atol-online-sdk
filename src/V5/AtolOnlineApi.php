@@ -13,8 +13,8 @@ use DF\AtolOnline\V5\DTO\DocumentRegistration\DocumentRegistrationRequestDTO;
 use DF\AtolOnline\V5\DTO\DocumentRegistration\DocumentRegistrationResponseDTO;
 use DF\AtolOnline\V5\DTO\GetToken\GetTokenRequestDTO;
 use DF\AtolOnline\V5\DTO\GetToken\GetTokenResponseDTO;
+use DF\AtolOnline\V5\DTO\Shared\ErrorResponseDTO;
 use DF\AtolOnline\V5\Enums\Operation;
-use DF\AtolOnline\V5\Mappers\ErrorResponseMapper;
 use DF\AtolOnline\V5\Requests\DocumentRegistrationRequest;
 use DF\AtolOnline\V5\Requests\GetTokenRequest;
 use DF\AtolOnline\V5\Storage\TokenStorage;
@@ -121,9 +121,9 @@ readonly class AtolOnlineApi
         try {
             $response = $this->httpClient->request($method, $uri, $options);
         } catch (BadResponseException $e) {
-            $errorResponseDTO = ErrorResponseMapper::fromJsonResponse(
-                response: $e->getResponse(),
-            );
+            $json = $e->getResponse()->getBody()->getContents();
+
+            $errorResponseDTO = $this->mapper->map($json, ErrorResponseDTO::class);
 
             throw new AtolOnlineApiV5ErrorException($errorResponseDTO);
         }
