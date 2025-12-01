@@ -15,7 +15,6 @@ use DF\AtolOnline\V5\DTO\GetToken\GetTokenResponseDTO;
 use DF\AtolOnline\V5\Enums\Operation;
 use DF\AtolOnline\V5\Mappers\DocumentRegistrationResponseMapper;
 use DF\AtolOnline\V5\Mappers\ErrorResponseMapper;
-use DF\AtolOnline\V5\Mappers\GetTokenResponseMapper;
 use DF\AtolOnline\V5\Requests\DocumentRegistrationRequest;
 use DF\AtolOnline\V5\Requests\GetTokenRequest;
 use DF\AtolOnline\V5\Storage\TokenStorage;
@@ -24,9 +23,14 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\RequestOptions;
 use Psr\Http\Message\ResponseInterface;
+use Rekalogika\Mapper\MapperFactory;
+use Rekalogika\Mapper\MapperInterface;
+use stdClass;
 
 readonly class AtolOnlineApi
 {
+    private MapperInterface $mapper;
+
     public function __construct(
         private string $login,
         private string $password,
@@ -34,7 +38,9 @@ readonly class AtolOnlineApi
         private ClientInterface $httpClient,
         public TokenStorage $tokenStorage = new TokenStorage,
         private ?string $source = null,
-    ) {}
+    ) {
+        $this->mapper = new MapperFactory()->getMapper();
+    }
 
     public function auth(): static
     {
@@ -55,10 +61,11 @@ readonly class AtolOnlineApi
 
     public function getToken(GetTokenRequestDTO $requestDTO): GetTokenResponseDTO
     {
-        return GetTokenResponseMapper::fromJsonResponse(
-            response: $this->send(
+        return $this->mapper->map(
+            source: $this->decodeJsonResponse($this->send(
                 request: new GetTokenRequest($requestDTO),
-            ),
+            )),
+            target: GetTokenResponseDTO::class,
         );
     }
 
@@ -128,5 +135,13 @@ readonly class AtolOnlineApi
         }
 
         return $response;
+    }
+
+    private function decodeJsonResponse(ResponseInterface $response): stdClass
+    {
+        return json_decode(
+            json: (string) $response->getBody() ?: '{}',
+            flags: JSON_BIGINT_AS_STRING | JSON_THROW_ON_ERROR,
+        );
     }
 }
