@@ -6,6 +6,7 @@ namespace DF\AtolOnline\V5;
 
 use BackedEnum;
 use Brick\JsonMapper\JsonMapper;
+use Brick\JsonMapper\OnExtraProperties;
 use Brick\JsonMapper\OnMissingProperties;
 use DF\AtolOnline\Enums\HttpAuthType;
 use DF\AtolOnline\Exceptions\AtolOnlineApiV5ErrorException;
@@ -42,6 +43,7 @@ readonly final class AtolOnlineApi
         private ?string $source = null,
     ) {
         $this->mapper = new JsonMapper(
+            onExtraProperties: OnExtraProperties::IGNORE,
             onMissingProperties: OnMissingProperties::SET_DEFAULT,
         );
     }
