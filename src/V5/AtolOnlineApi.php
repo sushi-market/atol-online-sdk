@@ -36,19 +36,19 @@ readonly class AtolOnlineApi
         private ?string $source = null,
     ) {}
 
-    public function auth(?string $login = null, ?string $password = null, ?string $source = null): static
+    public function auth(): static
     {
-        $accessToken = new AccessToken(
-            value: static::getToken(
-                requestDTO: new GetTokenRequestDTO(
-                    login: $login ?? $this->login,
-                    pass: $password ?? $this->password,
-                    source: $source ?? $this->source,
-                ),
-            )->token
+        $responseDTO = $this->getToken(
+            requestDTO: new GetTokenRequestDTO(
+                login: $this->login,
+                pass: $this->password,
+                source: $this->source,
+            ),
         );
 
-        $this->tokenStorage->token = $accessToken;
+        $this->tokenStorage->token = new AccessToken(
+            value: $responseDTO->token,
+        );
 
         return $this;
     }
