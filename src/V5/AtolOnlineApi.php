@@ -28,6 +28,8 @@ use DF\AtolOnline\V5\Requests\DocumentRegistrationRequest;
 use DF\AtolOnline\V5\Requests\GetTokenRequest;
 use DF\AtolOnline\V5\Storage\TokenStorage;
 use DF\AtolOnline\V5\ValueObjects\AccessToken;
+use DF\AtolOnline\V5\ValueObjects\Credentials;
+use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\RequestOptions;
@@ -36,15 +38,22 @@ use Psr\Http\Message\ResponseInterface;
 readonly final class AtolOnlineApi
 {
     private JsonMapper $mapper;
+    private ClientInterface $httpClient;
+    private TokenStorage $tokenStorage;
 
     public function __construct(
-        private string $login,
-        private string $password,
-        private string $groupCode,
-        private ClientInterface $httpClient,
-        public TokenStorage $tokenStorage = new TokenStorage,
-        private ?string $source = null,
+        private Credentials $credentials,
+        ?AccessToken $accessToken = null,
+        ?ClientInterface $httpClient = null,
     ) {
+        $this->httpClient = $httpClient ?? new Client([
+            'base_uri' => 'https://online.atol.ru/possystem/v5/',
+        ]);
+
+        $this->tokenStorage = new TokenStorage(
+            token: $accessToken
+        );
+
         $this->mapper = new JsonMapper(
             onExtraProperties: OnExtraProperties::IGNORE,
             onMissingProperties: OnMissingProperties::SET_DEFAULT,
@@ -55,9 +64,8 @@ readonly final class AtolOnlineApi
     {
         $responseDTO = $this->getToken(
             requestDTO: new GetTokenRequestDTO(
-                login: $this->login,
-                pass: $this->password,
-                source: $this->source,
+                login: $this->credentials->login,
+                pass: $this->credentials->password,
             ),
         );
 
@@ -120,7 +128,7 @@ readonly final class AtolOnlineApi
     private function documentRegistration(Operation $operation, DocumentRegistrationRequestDTO $requestDTO): DocumentRegistrationResponseDTO
     {
         $json = $this->send(new DocumentRegistrationRequest(
-            groupCode: $this->groupCode,
+            groupCode: $this->credentials->groupCode,
             operation: $operation,
             requestDTO: $requestDTO,
         ))->getBody()->getContents();
@@ -131,7 +139,7 @@ readonly final class AtolOnlineApi
     private function documentCorrection(Operation $operation, DocumentCorrectionRequestDTO $requestDTO): DocumentCorrectionResponseDTO
     {
         $json = $this->send(new DocumentCorrectionRequest(
-            groupCode: $this->groupCode,
+            groupCode: $this->credentials->groupCode,
             operation: $operation,
             requestDTO: $requestDTO,
         ))->getBody()->getContents();
@@ -142,7 +150,7 @@ readonly final class AtolOnlineApi
     public function documentInfo(DocumentInfoRequestDTO $requestDTO): DocumentInfoResponseDTO
     {
         $json = $this->send(new DocumentInfoRequest(
-            groupCode: $this->groupCode,
+            groupCode: $this->credentials->groupCode,
             uuid: $requestDTO->uuid,
         ))->getBody()->getContents();
 
