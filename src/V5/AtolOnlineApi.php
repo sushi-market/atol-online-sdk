@@ -82,7 +82,13 @@ readonly final class AtolOnlineApi
             requestDTO: $requestDTO,
         ))->getBody()->getContents();
 
-        return $this->mapper->map($json, GetTokenResponseDTO::class);
+        $responseDTO = $this->mapper->map($json, GetTokenResponseDTO::class);
+
+        if ($responseDTO->error !== null) {
+            throw new AtolOnlineApiV5ErrorException($responseDTO->error);
+        }
+
+        return $responseDTO;
     }
 
     public function sell(DocumentRegistrationRequestDTO $requestDTO): DocumentRegistrationResponseDTO
@@ -133,7 +139,13 @@ readonly final class AtolOnlineApi
             requestDTO: $requestDTO,
         ))->getBody()->getContents();
 
-        return $this->mapper->map($json, DocumentRegistrationResponseDTO::class);
+        $responseDTO = $this->mapper->map($json, DocumentRegistrationResponseDTO::class);
+
+        if ($responseDTO->error !== null) {
+            throw new AtolOnlineApiV5ErrorException($responseDTO->error);
+        }
+
+        return $responseDTO;
     }
 
     private function documentCorrection(Operation $operation, DocumentCorrectionRequestDTO $requestDTO): DocumentCorrectionResponseDTO
@@ -144,7 +156,13 @@ readonly final class AtolOnlineApi
             requestDTO: $requestDTO,
         ))->getBody()->getContents();
 
-        return $this->mapper->map($json, DocumentCorrectionResponseDTO::class);
+        $responseDTO = $this->mapper->map($json, DocumentCorrectionResponseDTO::class);
+
+        if ($responseDTO->error !== null) {
+            throw new AtolOnlineApiV5ErrorException($responseDTO->error);
+        }
+
+        return $responseDTO;
     }
 
     public function documentInfo(DocumentInfoRequestDTO $requestDTO): DocumentInfoResponseDTO
@@ -154,7 +172,13 @@ readonly final class AtolOnlineApi
             uuid: $requestDTO->uuid,
         ))->getBody()->getContents();
 
-        return $this->mapper->map($json, DocumentInfoResponseDTO::class);
+        $responseDTO = $this->mapper->map($json, DocumentInfoResponseDTO::class);
+
+        if ($responseDTO->error !== null) {
+            throw new AtolOnlineApiV5ErrorException($responseDTO->error);
+        }
+
+        return $responseDTO;
     }
 
     private function send(ApiRequestInterface $request): ResponseInterface
@@ -194,7 +218,7 @@ readonly final class AtolOnlineApi
 
                 $errorResponseDTO = $this->mapper->map($json, ErrorResponseDTO::class);
 
-                throw new AtolOnlineApiV5ErrorException($errorResponseDTO);
+                throw new AtolOnlineApiV5ErrorException($errorResponseDTO->error);
             }
 
             throw $e;

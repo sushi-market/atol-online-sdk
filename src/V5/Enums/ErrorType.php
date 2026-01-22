@@ -10,4 +10,5 @@ enum ErrorType: string
     case SYSTEM = 'system';
     case DRIVER = 'driver';
     case TIMEOUT = 'timeout';
+    case AGENT = 'agent';
 }

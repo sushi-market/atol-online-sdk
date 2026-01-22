@@ -9,9 +9,9 @@ use DF\AtolOnline\V5\Enums\ErrorType;
 readonly class ErrorDTO
 {
     public function __construct(
-        public string $error_id,
         public int $code,
         public string $text,
+        public ?string $error_id = null,
         public ?ErrorType $type = null,
     ) {}
 }
