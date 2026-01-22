@@ -8,6 +8,7 @@ use BackedEnum;
 use Brick\JsonMapper\JsonMapper;
 use Brick\JsonMapper\OnExtraProperties;
 use Brick\JsonMapper\OnMissingProperties;
+use Exception;
 use DF\AtolOnline\Enums\HttpAuthType;
 use DF\AtolOnline\Exceptions\AtolOnlineApiV5ErrorException;
 use DF\AtolOnline\Exceptions\MissingTokenException;
@@ -31,7 +32,6 @@ use DF\AtolOnline\V5\ValueObjects\AccessToken;
 use DF\AtolOnline\V5\ValueObjects\Credentials;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\RequestOptions;
 use Psr\Http\Message\ResponseInterface;
 
@@ -162,6 +162,7 @@ readonly final class AtolOnlineApi
         $uri = $request->getUri();
         $method = $request->getMethod()->value;
         $options = [
+            RequestOptions::HTTP_ERRORS => true,
             RequestOptions::HEADERS => $request->getHeaders(),
         ];
 
@@ -181,12 +182,22 @@ readonly final class AtolOnlineApi
 
         try {
             $response = $this->httpClient->request($method, $uri, $options);
-        } catch (BadResponseException $e) {
-            $json = $e->getResponse()->getBody()->getContents();
+        } catch (Exception $e) {
+            $response = match (true) {
+                is_a($e, '\GuzzleHttp\Exception\RequestException') => $e->getResponse(),
+                is_a($e, '\Illuminate\Http\Client\RequestException') => $e->response->toPsrResponse(),
+                default => null,
+            };
 
-            $errorResponseDTO = $this->mapper->map($json, ErrorResponseDTO::class);
+            if ($response) {
+                $json = (string) $response->getBody();
 
-            throw new AtolOnlineApiV5ErrorException($errorResponseDTO);
+                $errorResponseDTO = $this->mapper->map($json, ErrorResponseDTO::class);
+
+                throw new AtolOnlineApiV5ErrorException($errorResponseDTO);
+            }
+
+            throw $e;
         }
 
         return $response;
