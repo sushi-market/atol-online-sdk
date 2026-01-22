@@ -60,7 +60,7 @@ readonly final class AtolOnlineApi
         );
     }
 
-    public function auth(?string $token = null): self
+    public function auth(?string $token = null): AccessToken
     {
         $token ??= $this->getToken(
             requestDTO: new GetTokenRequestDTO(
@@ -73,7 +73,7 @@ readonly final class AtolOnlineApi
             value: $token,
         );
 
-        return $this;
+        return $this->tokenStorage->token;
     }
 
     public function getToken(GetTokenRequestDTO $requestDTO): GetTokenResponseDTO
