@@ -6,6 +6,7 @@ namespace DF\AtolOnline\V5;
 
 use BackedEnum;
 use Brick\JsonMapper\JsonMapper;
+use Brick\JsonMapper\JsonMapperException;
 use Brick\JsonMapper\OnExtraProperties;
 use Brick\JsonMapper\OnMissingProperties;
 use Exception;
@@ -82,7 +83,11 @@ readonly final class AtolOnlineApi
             requestDTO: $requestDTO,
         ))->getBody()->getContents();
 
-        $responseDTO = $this->mapper->map($json, GetTokenResponseDTO::class);
+        try {
+            $responseDTO = $this->mapper->map($json, GetTokenResponseDTO::class);
+        } catch (JsonMapperException $e) {
+            $responseDTO = $this->mapper->map($json, ErrorResponseDTO::class);
+        }
 
         if ($responseDTO->error !== null) {
             throw new AtolOnlineApiV5ErrorException($responseDTO->error);
@@ -139,7 +144,11 @@ readonly final class AtolOnlineApi
             requestDTO: $requestDTO,
         ))->getBody()->getContents();
 
-        $responseDTO = $this->mapper->map($json, DocumentRegistrationResponseDTO::class);
+        try {
+            $responseDTO = $this->mapper->map($json, DocumentRegistrationResponseDTO::class);
+        } catch (JsonMapperException $e) {
+            $responseDTO = $this->mapper->map($json, ErrorResponseDTO::class);
+        }
 
         if ($responseDTO->error !== null) {
             throw new AtolOnlineApiV5ErrorException($responseDTO->error);
@@ -156,7 +165,11 @@ readonly final class AtolOnlineApi
             requestDTO: $requestDTO,
         ))->getBody()->getContents();
 
-        $responseDTO = $this->mapper->map($json, DocumentCorrectionResponseDTO::class);
+        try {
+            $responseDTO = $this->mapper->map($json, DocumentCorrectionResponseDTO::class);
+        } catch (JsonMapperException $e) {
+            $responseDTO = $this->mapper->map($json, ErrorResponseDTO::class);
+        }
 
         if ($responseDTO->error !== null) {
             throw new AtolOnlineApiV5ErrorException($responseDTO->error);
@@ -172,7 +185,11 @@ readonly final class AtolOnlineApi
             uuid: $requestDTO->uuid,
         ))->getBody()->getContents();
 
-        $responseDTO = $this->mapper->map($json, DocumentInfoResponseDTO::class);
+        try {
+            $responseDTO = $this->mapper->map($json, DocumentInfoResponseDTO::class);
+        } catch (JsonMapperException $e) {
+            $responseDTO = $this->mapper->map($json, ErrorResponseDTO::class);
+        }
 
         if ($responseDTO->error !== null) {
             throw new AtolOnlineApiV5ErrorException($responseDTO->error);
