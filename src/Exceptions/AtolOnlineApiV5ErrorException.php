@@ -10,7 +10,7 @@ use RuntimeException;
 class AtolOnlineApiV5ErrorException extends RuntimeException implements AtolOnlineException
 {
     public function __construct(
-        ErrorDTO $errorDTO,
+        readonly public ErrorDTO $errorDTO,
     ) {
         parent::__construct(
             message: $errorDTO->text,
