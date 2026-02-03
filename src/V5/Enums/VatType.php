@@ -13,11 +13,13 @@ enum VatType: string
     case VAT_7 = 'vat7';
     case VAT_10 = 'vat10';
     case VAT_20 = 'vat20';
+    case VAT_22 = 'vat22';
 
     case VAT_105 = 'vat105';
     case VAT_107 = 'vat107';
     case VAT_110 = 'vat110';
     case VAT_120 = 'vat120';
+    case VAT_122 = 'vat122';
 
     public function getDescription(): string
     {
@@ -29,11 +31,13 @@ enum VatType: string
             self::VAT_7 => 'НДС по ставке 7%',
             self::VAT_10 => 'НДС по ставке 10%',
             self::VAT_20 => 'НДС по ставке 20%',
+            self::VAT_22 => 'НДС по ставке 22%',
 
             self::VAT_105 => 'НДС по расчетной ставке 5/105',
             self::VAT_107 => 'НДС по расчетной ставке 7/107',
             self::VAT_110 => 'НДС по расчетной ставке 10/110',
             self::VAT_120 => 'НДС по расчетной ставке 20/120',
+            self::VAT_122 => 'НДС по расчетной ставке 22/122',
         };
     }
 }
