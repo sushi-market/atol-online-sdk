@@ -40,4 +40,67 @@ enum VatType: string
             self::VAT_122 => 'НДС по расчетной ставке 22/122',
         };
     }
+
+    public function percent(): float
+    {
+        return match ($this) {
+            self::VAT_0, self::NONE => 0.0,
+            self::VAT_5, self::VAT_105 => 5.0,
+            self::VAT_7, self::VAT_107 => 7.0,
+            self::VAT_10, self::VAT_110 => 10.0,
+            self::VAT_20, self::VAT_120 => 20.0,
+            self::VAT_22, self::VAT_122 => 22.0,
+        };
+    }
+
+    /**
+     * Начисляет НДС на сумму (из цены без НДС делает цену с НДС).
+     *
+     * Пример:
+     * <code>
+     * VatType::VAT_20->applyVat(1000.00);
+     * // 1200.00
+     * </code>
+     */
+    public function applyVat(float $amount): float
+    {
+        $vat = $amount * ($this->percent() / 100);
+
+        return round(
+            num: $amount + $vat,
+            precision: 2,
+        );
+    }
+
+    /**
+     * Выделяет сумму НДС из цены с НДС.
+     *
+     * Пример:
+     * <code>
+     * VatType::VAT_20->extractVat(1200.00);
+     * // 200.00
+     * </code>
+     */
+    public function extractVat(float $amountWithVat): float
+    {
+        $vat = $amountWithVat * ($this->percent() / (100 + $this->percent()));
+
+        return round($vat, 2);
+    }
+
+    /**
+     * Возвращает сумму без НДС из суммы с НДС.
+     *
+     * Пример:
+     * <code>
+     * VatType::VAT_20->removeVat(1200.00);
+     * // 1000.00
+     * </code>
+     */
+    public function removeVat(float $amountWithVat): float
+    {
+        $vat = $this->extractVat($amountWithVat);
+
+        return round($amountWithVat - $vat, 2);
+    }
 }
