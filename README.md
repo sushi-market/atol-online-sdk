@@ -28,3 +28,53 @@ $atol = new AtolOnlineApi(
     ),
 );
 ```
+
+## 💰 Работа с НДС (VatType)
+
+В SDK доступен enum `VatType`, который инкапсулирует тип ставки НДС для чеков Atol и содержит хелперы для расчёта суммы с НДС, выделения НДС и получения суммы без НДС.
+
+Поддерживаются:
+- обычные ставки (0%, 5%, 7%, 10%, 20%, 22%)
+- расчетные ставки (5/105, 7/107, 10/110, 20/120, 22/122)
+- режим без НДС
+
+---
+
+### Начисление НДС (из цены без НДС в цену с НДС)
+
+```php
+use DF\AtolOnline\V5\Enums\VatType;
+
+$vat = VatType::VAT_20;
+
+$net = 1000.00;
+$gross = $vat->applyVat($net);
+
+// 1200.00
+```
+
+### Выделение НДС из суммы с НДС
+
+```php
+use DF\AtolOnline\V5\Enums\VatType;
+
+$vat = VatType::VAT_20;
+
+$gross = 1200.00;
+$vatAmount = $vat->extractVat($gross);
+
+// 200.00
+```
+
+### Получение суммы без НДС
+
+```php
+use DF\AtolOnline\V5\Enums\VatType;
+
+$vat = VatType::VAT_20;
+
+$gross = 1200.00;
+$net = $vat->removeVat($gross);
+
+// 1000.00
+```
