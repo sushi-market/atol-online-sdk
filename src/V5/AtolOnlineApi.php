@@ -56,8 +56,8 @@ readonly final class AtolOnlineApi
         );
 
         $this->mapper = new JsonMapper(
-            onExtraProperties: OnExtraProperties::IGNORE,
-            onMissingProperties: OnMissingProperties::SET_DEFAULT,
+            onExtraProperties: OnExtraProperties::Ignore,
+            onMissingProperties: OnMissingProperties::SetDefault,
         );
     }
 
