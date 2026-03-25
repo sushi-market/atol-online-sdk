@@ -9,7 +9,6 @@ use Brick\JsonMapper\JsonMapper;
 use Brick\JsonMapper\JsonMapperException;
 use Brick\JsonMapper\OnExtraProperties;
 use Brick\JsonMapper\OnMissingProperties;
-use Exception;
 use DF\AtolOnline\Enums\HttpAuthType;
 use DF\AtolOnline\Exceptions\AtolOnlineApiV5ErrorException;
 use DF\AtolOnline\Exceptions\MissingTokenException;
@@ -31,15 +30,18 @@ use DF\AtolOnline\V5\Requests\GetTokenRequest;
 use DF\AtolOnline\V5\Storage\TokenStorage;
 use DF\AtolOnline\V5\ValueObjects\AccessToken;
 use DF\AtolOnline\V5\ValueObjects\Credentials;
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\RequestOptions;
 use Psr\Http\Message\ResponseInterface;
 
-readonly final class AtolOnlineApi
+final readonly class AtolOnlineApi
 {
     private JsonMapper $mapper;
+
     private ClientInterface $httpClient;
+
     private TokenStorage $tokenStorage;
 
     public function __construct(
@@ -52,7 +54,7 @@ readonly final class AtolOnlineApi
         ]);
 
         $this->tokenStorage = new TokenStorage(
-            token: $accessToken
+            token: $accessToken,
         );
 
         $this->mapper = new JsonMapper(
